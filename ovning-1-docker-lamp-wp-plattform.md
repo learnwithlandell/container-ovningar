@@ -1,5 +1,7 @@
 # 🐳 WordPress-plattform med 3 containrar
 
+**Kräver att du har [Docker Desktop](https://www.docker.com/products/docker-desktop/) installerat**
+
 Portning av vm-ovningar/ovning-4-vbox-lamp-wp-plattform.md till docker
 
 **(web, db, utils) + färdig wp-config**
@@ -61,7 +63,6 @@ services:
     command: ["sleep", "infinity"]
     networks:
       - default
-    packages: []
     build:
       context: .
       dockerfile: utils.Dockerfile
