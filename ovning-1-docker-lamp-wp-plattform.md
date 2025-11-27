@@ -26,18 +26,25 @@ nano docker-compose.yml
 Klistra in:
 
 ```
+version: '2'
 services:
   db:
     image: mariadb:10.6
     container_name: wp-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wpuser
-      MYSQL_PASSWORD: password
+        MYSQL_ROOT_PASSWORD: rootpass
+        MYSQL_DATABASE: wordpress
+        MYSQL_USER: wpuser
+        MYSQL_PASSWORD: password
     volumes:
-      - db_data:/var/lib/mysql
+        - db_data:/var/lib/mysql
+        - ./mariadb-no-ssl.cnf:/etc/mysql/conf.d/mariadb-no-ssl.cnf
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+        interval: 5s
+        timeout: 3s
+        retries: 10
 
   wordpress:
     image: wordpress:latest
@@ -89,6 +96,7 @@ RUN apt update && apt install -y \
     curl \
     iputils-ping \
     mariadb-client \
+    default-mysql-client \
     nano
 
 CMD ["sleep", "infinity"]
@@ -151,7 +159,25 @@ require_once ABSPATH . 'wp-settings.php';
 
 ---
 
-## ▶️ 5. Starta allt
+## 🧰 5. Skapa mariadb-no-ssl.cnf (konfiguration, inte best practice)
+
+```
+nano mariadb-no-ssl.cnf
+```
+
+Innehåll:
+
+```
+[mysqld]
+skip_ssl
+ssl=0
+
+[client]
+ssl=0
+```
+---
+
+## ▶️ 6. Starta allt
 
 ```
 docker compose up -d
